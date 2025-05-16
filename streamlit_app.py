@@ -193,8 +193,8 @@ if st.button(
             )
 
             # Display sample of results
-            st.subheader("Sample Results (First 5 rows)")
-            st.dataframe(output_df.head(5))
+            st.subheader("Sample Results (First 50 rows)")
+            st.dataframe(output_df.head(50))
 
             # Display stats
             st.subheader("Statistics")

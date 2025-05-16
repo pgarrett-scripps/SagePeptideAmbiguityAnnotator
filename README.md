@@ -43,6 +43,10 @@ streamlit run streamlit_app.py
 
 Then open your browser at http://localhost:8501
 
+### Streamlit Community Cloud
+try me:
+https://sage-peptide-ambiguity-annotator.streamlit.app/
+
 ## Python API
 
 ```python
