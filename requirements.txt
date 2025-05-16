@@ -1,0 +1,3 @@
+pandas==2.2.3
+peptacular==2.5.0
+streamlit==1.45.1

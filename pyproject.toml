@@ -1,0 +1,35 @@
+[build-system]
+requires = ["setuptools>=42", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sage-peptide-ambiguity-annotator"
+version = "1.0.0"
+description = "Annotate peptide spectrum matches (PSMs) from Sage with ambiguity information"
+readme = "README.md"
+authors = [
+    {name = "Patrick Garrett", email = "pgarrett@scripps.edu"}
+]
+license = {text = "MIT"}
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Scientific/Engineering :: Bio-Informatics",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "pandas",
+    "fastparquet",
+    "peptacular==2.5.0",
+]
+
+[project.urls]
+"Homepage" = "https://github.com/pgarrett-scripps/SagePeptideAmbiguityAnnotator"
+"Bug Tracker" = "https://github.com/pgarrett-scripps/SagePeptideAmbiguityAnnotator/issues"
+
+[project.scripts]
+sage-annotate = "sage_peptide_ambiguity_annotator.main:main"
+
+[tool.setuptools]
+packages = ["sage_peptide_ambiguity_annotator"]
