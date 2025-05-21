@@ -6,6 +6,49 @@ A tool for annotating peptide ambiguity in Sage search engine results based on f
 
 The SagePeptideAmbiguityAnnotator processes peptide spectrum matches (PSMs) from Sage search engine output and annotates peptides with ambiguity information based on fragment ion coverage. It helps identify which parts of a peptide sequence have strong evidence from fragment ions and which parts are less certain. For open searches it can also place the observed mass shift as an internal modification, or labile modification if complete fragment ion coverage is observed.
 
+## Examples (simple)
+
+```bash
+sequence    PEPTIDE
+b-ions      0110000
+y-ions      0000110
+annot-seq   (?PE)PTI(?DE)
+```
+
+```bash
+sequence    PEPTIDE
+b-ions      0111000
+y-ions      0000000
+annot-seq   (?PE)PT(?IDE)
+```
+
+## Examples (open search)
+
+
+```bash
+sequence    PEPTIDE
+b-ions      0111000
+y-ions      0000001
+mass-shift  100
+annot-seq   (?PE)PT(ID)[100]E
+
+# Observed mass shift is localized to either I or D
+```
+
+```bash
+sequence    PEPTIDE
+b-ions      0111000
+y-ions      0001111
+mass-shift  100
+annot-seq   {100}(?PE)PTIDE
+
+# since ions overllaped the mass shift couldt be localized and is added as a labile modification
+```
+
+
+Given the peptide sequence 'PEPTIDE', and the following b-ion fragments (1-7): 0110000, and y-ion fragments (1-7): 0000110, then the sequence would be annotated as follows: (?PE)PTI(?DE)
+
+
 ## Installation
 
 ### From PyPI
@@ -74,6 +117,20 @@ output_df = process_psm_data(
 # Save the output
 save_output(output_df, "annotated_results.sage.parquet")
 ```
+
+## Different Files / Single Peptides
+
+```python
+import peptacular as pt
+
+ambiguity_sequence = pt.annotate_ambiguity(
+    sequence='PEPTIDE', 
+    forward_coverage=[0,1,0,1,0,0,0], 
+    reverse_coverage=[0,0,0,1,1,1,0], 
+    mass_shift=100.0
+)
+```
+
 
 ## Input File Requirements
 
