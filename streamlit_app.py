@@ -68,11 +68,28 @@ Upload your Sage results file and matched fragments file to get started.
 # Sidebar with options
 st.sidebar.header("Configuration")
 
+output_format = st.sidebar.selectbox(
+    "Output Format", options=["parquet", "tsv"], help="File format for the output file"
+)
+
+st.sidebar.divider()
+
+st.sidebar.caption('The following values set the threshold for what is considered a mass shift. ' \
+            'This should be set to a value grater than the expected precursor mass error of the instrument. ')
+
+
+use_mass_shift = st.sidebar.checkbox(
+    "Include Mass Shift Annotation",
+    value=False,
+    help="Whether to annotate mass shifts in peptides",
+)
+
 # Mass error options
 mass_error_type = st.sidebar.selectbox(
     "Mass Error Type",
     options=["ppm", "Da"],
     help="Type of mass error (parts per million or Daltons)",
+    disabled=not use_mass_shift,
 )
 
 mass_error_value = st.sidebar.number_input(
@@ -81,17 +98,9 @@ mass_error_value = st.sidebar.number_input(
     max_value=1000.0,
     value=50.0,
     help="Threshold value for mass error",
+    disabled=not use_mass_shift,
 )
 
-use_mass_shift = st.sidebar.checkbox(
-    "Include Mass Shift Annotation",
-    value=False,
-    help="Whether to annotate mass shifts in peptides",
-)
-
-output_format = st.sidebar.selectbox(
-    "Output Format", options=["parquet", "tsv"], help="File format for the output file"
-)
 
 # Main area with file upload
 st.header("Upload Files", divider=True)

@@ -30,9 +30,9 @@ sequence    PEPTIDE
 b-ions      0111000
 y-ions      0000001
 mass-shift  100
-annot-seq   (?PE)PT(ID)[100]E
+annot-seq   (?PE)PT(?ID)[100]E
 
-# Observed mass shift is localized to either I or D
+# Observed mass shift is localized to: ID
 ```
 
 ```bash
@@ -42,12 +42,8 @@ y-ions      0001111
 mass-shift  100
 annot-seq   {100}(?PE)PTIDE
 
-# since ions overllaped the mass shift couldt be localized and is added as a labile modification
+# since the forward and reverse ion series overlapped, the mass shift could not be localized and is added as a labile modification.
 ```
-
-
-Given the peptide sequence 'PEPTIDE', and the following b-ion fragments (1-7): 0110000, and y-ion fragments (1-7): 0000110, then the sequence would be annotated as follows: (?PE)PTI(?DE)
-
 
 ## Installation
 
@@ -70,6 +66,14 @@ pip install -e .
 ### Command Line Interface
 
 ```bash
+# Normal Search (Without Mass Shifts)
+sage-annotate --results results.sage.parquet \
+              --fragments matched_fragments.sage.parquet \
+              --output annotated_results.sage.parquet \
+```
+
+```bash
+# Open Search (With Mass Shifts)
 sage-annotate --results results.sage.parquet \
               --fragments matched_fragments.sage.parquet \
               --output annotated_results.sage.parquet \
