@@ -111,6 +111,9 @@ def read_input_files(
             "Unsupported file format for results. Only .parquet and .tsv are supported."
         )
 
+    if "stripped_peptide" not in results_df.columns:
+        results_df["stripped_peptide"] = results_df["peptide"].apply(pt.strip_mods)
+
     # Check required columns in results
     required_results_cols = [
         "psm_id",

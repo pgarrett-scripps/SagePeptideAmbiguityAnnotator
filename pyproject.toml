@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "sage-peptide-ambiguity-annotator"
-version = "1.0.0"
+dynamic = ["version"]
 description = "Annotate peptide spectrum matches (PSMs) from Sage with ambiguity information"
 readme = "README.md"
 authors = [
@@ -33,3 +33,6 @@ sage-annotate = "sage_peptide_ambiguity_annotator.main:main"
 
 [tool.setuptools]
 packages = ["sage_peptide_ambiguity_annotator"]
+
+[tool.setuptools.dynamic]
+version = {attr = "sage_peptide_ambiguity_annotator.__version__"}
