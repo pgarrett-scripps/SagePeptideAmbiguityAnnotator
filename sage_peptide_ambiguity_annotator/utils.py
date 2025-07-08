@@ -1,77 +1,10 @@
-"""
-SagePeptideAmbiguityAnnotator main module.
-
-This module processes peptide spectrum matches (PSMs) from Sage search engine output
-and annotates peptides with ambiguity information based on fragment ion coverage.
-"""
-
+from typing import Dict, List, Tuple
 import os
-import sys
 import logging
 import pandas as pd
-import argparse
-import json
-from typing import Dict, List, Tuple, Optional
-from pathlib import Path
 import peptacular as pt
-
-
-def setup_logging(verbose: bool = False) -> None:
-    """
-    Set up logging configuration.
-
-    Args:
-        verbose: Whether to show verbose (DEBUG) logs
-    """
-    log_level = logging.DEBUG if verbose else logging.INFO
-    log_format = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    logging.basicConfig(level=log_level, format=log_format)
-
-
-def parse_arguments():
-    """Parse command line arguments."""
-    parser = argparse.ArgumentParser(
-        description="Process Sage PSM and fragment data to annotate peptide ambiguity",
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter,
-    )
-    parser.add_argument(
-        "--results",
-        type=str,
-        required=True,
-        help="Path to the results.sage.parquet or results.sage.tsv file",
-    )
-    parser.add_argument(
-        "--fragments",
-        type=str,
-        required=True,
-        help="Path to the matched_fragments.sage.parquet or matched_fragments.tsv file",
-    )
-
-    # Mass error options
-    parser.add_argument(
-        "--mass_error_type",
-        type=str,
-        default="ppm",
-        choices=["ppm", "Da"],
-        help="Type of mass error (ppm or Da)",
-    )
-    parser.add_argument(
-        "--mass_error_value", type=float, default=50.0, help="Value of mass error"
-    )
-    parser.add_argument(
-        "--mass_shift", action="store_true", help="Turn on mass shift annotation"
-    )
-
-    # Output options
-    parser.add_argument(
-        "--output",
-        type=str,
-        required=True,
-        help="Path to the output file (.parquet or .tsv)",
-    )
-    parser.add_argument("--verbose", action="store_true", help="Enable verbose logging")
-
-    return parser.parse_args()
+import glob
+from typing import Tuple, List
 
 
 def read_input_files(
@@ -374,6 +307,82 @@ def process_psm_data(
     return output_df
 
 
+def find_sage_files(folder_path: str) -> Tuple[str, str]:
+    """
+    Find results.sage.* and matched_fragments.sage.* files in a folder.
+
+    Args:
+        folder_path: Path to the folder containing Sage output files
+
+    Returns:
+        Tuple of (results_path, fragments_path)
+
+    Raises:
+        FileNotFoundError: If required files are not found
+        ValueError: If multiple files of the same type are found
+    """
+    logger = logging.getLogger(__name__)
+
+    if not os.path.exists(folder_path):
+        raise FileNotFoundError(f"Folder not found: {folder_path}")
+
+    if not os.path.isdir(folder_path):
+        raise ValueError(f"Path is not a directory: {folder_path}")
+
+    # Search for results files
+    results_patterns = ["results.sage.parquet", "results.sage.tsv"]
+
+    fragments_patterns = [
+        "matched_fragments.sage.parquet",
+        "matched_fragments.sage.tsv",
+    ]
+
+    results_files: List[str] = []
+    fragments_files: List[str] = []
+
+    for pattern in results_patterns:
+        matches = glob.glob(os.path.join(folder_path, pattern))
+        results_files.extend(matches)
+
+    for pattern in fragments_patterns:
+        matches = glob.glob(os.path.join(folder_path, pattern))
+        fragments_files.extend(matches)
+
+    # Check results
+    if not results_files:
+        raise FileNotFoundError(
+            f"No results.sage.* file found in {folder_path}. "
+            f"Expected one of: {', '.join(results_patterns)}"
+        )
+
+    if len(results_files) > 1:
+        raise ValueError(
+            f"Multiple results.sage.* files found in {folder_path}: "
+            f"{', '.join(results_files)}. Please specify files individually."
+        )
+
+    # Check fragments
+    if not fragments_files:
+        raise FileNotFoundError(
+            f"No matched_fragments.sage.* file found in {folder_path}. "
+            f"Expected one of: {', '.join(fragments_patterns)}"
+        )
+
+    if len(fragments_files) > 1:
+        raise ValueError(
+            f"Multiple matched_fragments.sage.* files found in {folder_path}: "
+            f"{', '.join(fragments_files)}. Please specify files individually."
+        )
+
+    results_path = results_files[0]
+    fragments_path = fragments_files[0]
+
+    logger.info(f"Found results file: {results_path}")
+    logger.info(f"Found fragments file: {fragments_path}")
+
+    return results_path, fragments_path
+
+
 def save_output(df: pd.DataFrame, output_path: str) -> None:
     """
     Save the output DataFrame to a file.
@@ -406,41 +415,3 @@ def save_output(df: pd.DataFrame, output_path: str) -> None:
         )
 
     logger.info(f"Output saved successfully: {output_path} ({len(df)} rows)")
-
-
-def main():
-    """Main function to run the application."""
-    args = parse_arguments()
-
-    # Setup logging
-    setup_logging(args.verbose)
-    logger = logging.getLogger(__name__)
-
-    try:
-        logger.info("Starting SagePeptideAmbiguityAnnotator")
-
-        # Read the input files
-        results_df, fragments_df = read_input_files(args.results, args.fragments)
-
-        # Process the data
-        output_df = process_psm_data(
-            results_df,
-            fragments_df,
-            mass_error_type=args.mass_error_type,
-            mass_error_value=args.mass_error_value,
-            use_mass_shift=args.mass_shift,
-        )
-
-        # Save the output
-        save_output(output_df, args.output)
-
-        logger.info("Processing completed successfully")
-        return 0
-
-    except Exception as e:
-        logger.error(f"An error occurred: {str(e)}", exc_info=args.verbose)
-        return 1
-
-
-if __name__ == "__main__":
-    sys.exit(main())

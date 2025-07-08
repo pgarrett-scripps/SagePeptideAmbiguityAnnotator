@@ -11,7 +11,7 @@ import tempfile
 import streamlit as st
 import logging
 
-from sage_peptide_ambiguity_annotator.main import (
+from sage_peptide_ambiguity_annotator.utils import (
     read_input_files,
     process_psm_data,
 )
@@ -74,8 +74,10 @@ output_format = st.sidebar.selectbox(
 
 st.sidebar.divider()
 
-st.sidebar.caption('The following values set the threshold for what is considered a mass shift. ' \
-            'This should be set to a value grater than the expected precursor mass error of the instrument. ')
+st.sidebar.caption(
+    "The following values set the threshold for what is considered a mass shift. "
+    "This should be set to a value grater than the expected precursor mass error of the instrument. "
+)
 
 
 use_mass_shift = st.sidebar.checkbox(

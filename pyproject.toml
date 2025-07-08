@@ -29,7 +29,7 @@ dependencies = [
 "Bug Tracker" = "https://github.com/pgarrett-scripps/SagePeptideAmbiguityAnnotator/issues"
 
 [project.scripts]
-sage-annotate = "sage_peptide_ambiguity_annotator.main:main"
+sage-annot = "sage_peptide_ambiguity_annotator.cli:main"
 
 [tool.setuptools]
 packages = ["sage_peptide_ambiguity_annotator"]

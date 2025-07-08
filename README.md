@@ -68,18 +68,26 @@ pip install -e .
 ```bash
 # Normal Search (Without Mass Shifts)
 sage-annotate --results results.sage.parquet \
-              --fragments matched_fragments.sage.parquet \
-              --output annotated_results.sage.parquet \
+              --fragments matched_fragments.sage.parquet
 ```
 
 ```bash
 # Open Search (With Mass Shifts)
 sage-annotate --results results.sage.parquet \
               --fragments matched_fragments.sage.parquet \
-              --output annotated_results.sage.parquet \
               --mass_error_type ppm \
               --mass_error_value 50.0 \
               --mass_shift
+```
+
+```bash
+# Pass sage results folder
+sage-annotate --folder sage_results
+```
+
+```bash
+# Pass data dir (many sage results)
+sage-annotate --data sage_data
 ```
 
 ### Streamlit Web Application
@@ -97,7 +105,7 @@ https://sage-peptide-ambiguity-annotator.streamlit.app/
 ## Python API
 
 ```python
-from sage_peptide_ambiguity_annotator.main import (
+from sage_peptide_ambiguity_annotator.utils import (
     read_input_files, 
     process_psm_data, 
     save_output
