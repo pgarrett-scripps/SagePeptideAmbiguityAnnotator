@@ -84,6 +84,31 @@ sage-annotate --results results.sage.parquet \
               --mass_shift
 ```
 
+Instead of naming both files, point `--folder` at one Sage output folder and the
+`results.sage.*` and `matched_fragments.sage.*` files in it are found automatically. A
+folder holding both a `.tsv` and a `.parquet` of the same kind is refused rather than
+guessed at.
+
+```bash
+# One Sage output folder
+sage-annotate --folder sage_results \
+              --output annotated_results.sage.tsv
+```
+
+`--data` takes a directory of such folders and processes each one, writing the `--output`
+file name inside every sub-folder. Sub-folders without Sage output are skipped with a
+warning.
+
+```bash
+# A directory of Sage output folders
+sage-annotate --data sage_data \
+              --output annotated_results.sage.tsv
+```
+
+`--results`, `--folder` and `--data` are mutually exclusive, and exactly one is required.
+`--fragments` is required with `--results`. Every flag has a short form:
+`-r`, `-f`, `-d`, `-frag`, `-type`, `-value`, `-shift`, `-o`, `-V`.
+
 ### Streamlit Web Application
 
 The web app needs Streamlit, which is not a dependency of the package:
@@ -102,10 +127,10 @@ https://sage-peptide-ambiguity-annotator.streamlit.app/
 ## Python API
 
 ```python
-from sage_peptide_ambiguity_annotator.main import (
-    read_input_files, 
-    process_psm_data, 
-    save_output
+from sage_peptide_ambiguity_annotator.utils import (
+    read_input_files,
+    process_psm_data,
+    save_output,
 )
 
 # Read input files
@@ -125,6 +150,18 @@ output_df = process_psm_data(
 
 # Save the output
 save_output(output_df, "annotated_results.sage.parquet")
+```
+
+The pipeline lives in `sage_peptide_ambiguity_annotator.utils` and the command line
+interface in `sage_peptide_ambiguity_annotator.cli`. Importing these names from
+`sage_peptide_ambiguity_annotator.main`, as releases up to 1.0.1 documented, still works.
+
+### Finding the files in a folder
+
+```python
+from sage_peptide_ambiguity_annotator.utils import find_sage_files
+
+results_path, fragments_path = find_sage_files("sage_results")
 ```
 
 ## Different Files / Single Peptides
