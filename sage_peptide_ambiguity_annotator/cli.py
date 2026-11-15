@@ -244,6 +244,11 @@ def process_folder(
             return False
 
         save_output(output_df, output_path)
+
+        if output_df["ambiguity_sequence"].notna().sum() == 0:
+            logger.error(f"No PSM was annotated in {folder}")
+            return False
+
         logger.info(f"Completed processing for folder: {folder}")
         return True
 
