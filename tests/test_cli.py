@@ -1,5 +1,7 @@
 """End-to-end tests for the ``sage-annotate`` command line entry point."""
 
+import logging
+
 import pandas as pd
 import pytest
 
@@ -86,3 +88,27 @@ def test_cli_requires_output(monkeypatch, results_path, fragments_path):
         _run_cli(monkeypatch, ["--results", results_path, "--fragments", fragments_path])
 
     assert excinfo.value.code == 2
+
+
+def test_cli_fails_when_no_psm_is_annotated(
+    monkeypatch, tmp_path, results_path, fragments_path, caplog
+):
+    def fail(*args, **kwargs):
+        raise ValueError("no fragment ion matches")
+
+    monkeypatch.setattr(
+        "sage_peptide_ambiguity_annotator.utils.pt.annotate_ambiguity", fail
+    )
+    caplog.set_level(logging.INFO)
+
+    output = tmp_path / "annotated_results.sage.tsv"
+
+    exit_code = _run_cli(
+        monkeypatch,
+        ["--results", results_path, "--fragments", fragments_path, "--output", str(output)],
+    )
+
+    assert exit_code == 1
+    out = pd.read_csv(output, sep="\t")
+    assert out["ambiguity_sequence"].isna().all()
+    assert "Annotated 0 of" in caplog.text

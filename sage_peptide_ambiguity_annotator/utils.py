@@ -219,7 +219,7 @@ def create_output_dataframe(
     """
     logger = logging.getLogger(__name__)
     ambiguity_sequences, mass_shifts = [], []
-    counts = {"valid": 0, "skipped": 0}
+    counts = {"valid": 0, "annotated": 0, "failed": 0, "skipped": 0}
 
     # Create a copy of the results DataFrame to avoid modifying the original
     results_copy = results_df.copy()
@@ -257,7 +257,9 @@ def create_output_dataframe(
                 )
                 ambiguity_sequences.append(ambiguity_sequence)
                 mass_shifts.append(mass_shift)
+                counts["annotated"] += 1
             except Exception as e:
+                counts["failed"] += 1
                 logger.error(f"Error annotating PSM {psm_id}: {str(e)}")
                 ambiguity_sequences.append(None)
                 mass_shifts.append(None)
@@ -271,9 +273,10 @@ def create_output_dataframe(
     results_copy["ambiguity_sequence"] = ambiguity_sequences
     results_copy["mass_shift"] = mass_shifts
 
-    logger.info(f"Processed {counts['valid']} PSMs with fragment counts")
-    if counts["skipped"] > 0:
-        logger.warning(f"Skipped {counts['skipped']} PSMs due to missing fragment data")
+    logger.info(
+        f"Annotated {counts['annotated']} of {len(results_df)} PSMs "
+        f"({counts['failed']} failed, {counts['skipped']} skipped)"
+    )
 
     return results_copy
 

@@ -36,6 +36,11 @@
 
 ### Fixed
 
+- `sage-annotate` counted PSMs that had fragment counts rather than PSMs that were
+  annotated, and a PSM whose annotation raised was logged and written as a null row
+  without failing the run: ten of ten null rows still reported "Processing completed
+  successfully" and exited 0. It now counts annotation failures, logs one summary line
+  (`Annotated N of M PSMs ...`), and exits non-zero when no PSM was annotated. (#3)
 - Several README claims that did not match the code: `stripped_peptide` is derived rather
   than required, the matched-fragments columns are documented, `mass_shift` is
   `expmass - calcmass` and is empty without `--mass_shift` or inside the mass error
