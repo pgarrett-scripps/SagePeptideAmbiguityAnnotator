@@ -219,7 +219,7 @@ def create_output_dataframe(
     """
     logger = logging.getLogger(__name__)
     ambiguity_sequences, mass_shifts = [], []
-    counts = {"valid": 0, "annotated": 0, "failed": 0, "skipped": 0}
+    counts = {"annotated": 0, "failed": 0, "skipped": 0}
 
     # Create a copy of the results DataFrame to avoid modifying the original
     results_copy = results_df.copy()
@@ -228,7 +228,6 @@ def create_output_dataframe(
         psm_id = psm_row["psm_id"]
 
         if psm_id in fragment_counts_by_psm:
-            counts["valid"] += 1
             _, forward_counts, reverse_counts = fragment_counts_by_psm[psm_id]
 
             # Calculate mass shift
