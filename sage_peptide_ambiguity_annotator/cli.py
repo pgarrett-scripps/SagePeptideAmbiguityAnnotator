@@ -243,6 +243,9 @@ def process_folder(
             logger.warning(f"No data to write after processing {folder}. Skipping.")
             return False
 
+        # Saved before the check below on purpose: a run where every annotation failed
+        # is reported as a failure, but the null-filled output is still written so the
+        # failures can be inspected.
         save_output(output_df, output_path)
 
         if output_df["ambiguity_sequence"].notna().sum() == 0:

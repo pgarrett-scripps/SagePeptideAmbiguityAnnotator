@@ -40,7 +40,10 @@
   annotated, and a PSM whose annotation raised was logged and written as a null row
   without failing the run: ten of ten null rows still reported "Processing completed
   successfully" and exited 0. It now counts annotation failures, logs one summary line
-  (`Annotated N of M PSMs ...`), and exits non-zero when no PSM was annotated. (#3)
+  (`Annotated N of M PSMs ...`), and exits non-zero when no PSM was annotated. The output
+  file is still written in that case, so the null rows can be inspected. (#3)
+- Two tests compared paths with a hard-coded `/`, so they failed on Windows while passing
+  on Linux and in CI. Reported by bfs2021 while contributing #6.
 - Several README claims that did not match the code: `stripped_peptide` is derived rather
   than required, the matched-fragments columns are documented, `mass_shift` is
   `expmass - calcmass` and is empty without `--mass_shift` or inside the mass error

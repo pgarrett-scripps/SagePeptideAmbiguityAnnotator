@@ -6,6 +6,7 @@ modes; it is unchanged and must keep passing, since the entry point now resolves
 """
 
 import logging
+import os
 
 import pandas as pd
 import pytest
@@ -271,7 +272,7 @@ def test_determine_output_path_data_mode(sage_data_dir):
     args = parse_arguments(["--data", str(sage_data_dir), "--output", "/tmp/out.sage.tsv"])
     folder = str(sage_data_dir / "run_a")
 
-    assert determine_output_path(args, folder) == f"{folder}/out.sage.tsv"
+    assert determine_output_path(args, folder) == os.path.join(folder, "out.sage.tsv")
 
 
 def test_get_folders_to_process_is_ordered(sage_data_dir):
@@ -279,7 +280,7 @@ def test_get_folders_to_process_is_ordered(sage_data_dir):
 
     folders = get_folders_to_process(args)
 
-    assert [f[0].rsplit("/", 1)[-1] for f in folders] == ["run_a", "run_b"]
+    assert [os.path.basename(f[0]) for f in folders] == ["run_a", "run_b"]
 
 
 def test_config_defaults():
