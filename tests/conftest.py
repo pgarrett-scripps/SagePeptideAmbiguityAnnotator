@@ -1,5 +1,6 @@
 """Shared fixtures for the SagePeptideAmbiguityAnnotator test suite."""
 
+import shutil
 from pathlib import Path
 
 import pandas as pd
@@ -43,3 +44,26 @@ def golden_2_5_0() -> pd.DataFrame:
 @pytest.fixture
 def golden_5() -> pd.DataFrame:
     return _read_golden(GOLDEN_5)
+
+
+def _make_sage_folder(folder: Path) -> Path:
+    """Copy the committed example into ``folder`` under the names Sage writes."""
+    folder.mkdir(parents=True, exist_ok=True)
+    shutil.copy(RESULTS_TSV, folder / "results.sage.tsv")
+    shutil.copy(FRAGMENTS_TSV, folder / "matched_fragments.sage.tsv")
+    return folder
+
+
+@pytest.fixture
+def sage_folder(tmp_path) -> Path:
+    """A single Sage output folder, as ``--folder`` expects."""
+    return _make_sage_folder(tmp_path / "search")
+
+
+@pytest.fixture
+def sage_data_dir(tmp_path) -> Path:
+    """A directory of two Sage output folders, as ``--data`` expects."""
+    data = tmp_path / "data"
+    _make_sage_folder(data / "run_a")
+    _make_sage_folder(data / "run_b")
+    return data

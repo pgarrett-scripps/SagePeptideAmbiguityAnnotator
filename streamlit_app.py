@@ -13,7 +13,7 @@ import tempfile
 import streamlit as st
 
 from sage_peptide_ambiguity_annotator import __version__
-from sage_peptide_ambiguity_annotator.main import (
+from sage_peptide_ambiguity_annotator.utils import (
     process_psm_data,
     read_input_files,
 )
