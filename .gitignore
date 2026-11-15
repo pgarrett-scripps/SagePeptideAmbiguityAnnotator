@@ -122,3 +122,8 @@ venv.bak/
 data/
 temp/
 output/
+
+# Committed example input for the test suite, which the "*.tsv" and "data/" rules
+# above would otherwise hide.
+!tests/data/
+!tests/data/*.tsv

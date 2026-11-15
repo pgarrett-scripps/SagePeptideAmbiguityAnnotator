@@ -6,14 +6,16 @@ allowing users to upload Sage output files, configure processing options,
 and download the annotated results.
 """
 
+import logging
 import os
 import tempfile
-import streamlit as st
-import logging
 
+import streamlit as st
+
+from sage_peptide_ambiguity_annotator import __version__
 from sage_peptide_ambiguity_annotator.main import (
-    read_input_files,
     process_psm_data,
+    read_input_files,
 )
 
 # Configure logging
@@ -236,6 +238,7 @@ fragment ion evidence and which parts are less certain.
 # Footer
 st.sidebar.markdown("---")
 st.sidebar.info(
-    "SagePeptideAmbiguityAnnotator - Version 0.1.0\n\n"
-    "For more information, visit the [GitHub repository](https://github.com/yourusername/SagePeptideAmbiguityAnnotator)."
+    f"SagePeptideAmbiguityAnnotator - Version {__version__}\n\n"
+    "For more information, visit the "
+    "[GitHub repository](https://github.com/pgarrett-scripps/SagePeptideAmbiguityAnnotator)."
 )
