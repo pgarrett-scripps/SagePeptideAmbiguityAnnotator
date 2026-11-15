@@ -5,14 +5,12 @@ This module processes peptide spectrum matches (PSMs) from Sage search engine ou
 and annotates peptides with ambiguity information based on fragment ion coverage.
 """
 
+import argparse
+import logging
 import os
 import sys
-import logging
+
 import pandas as pd
-import argparse
-import json
-from typing import Dict, List, Tuple, Optional
-from pathlib import Path
 import peptacular as pt
 
 
@@ -76,7 +74,7 @@ def parse_arguments():
 
 def read_input_files(
     results_path: str, fragments_path: str
-) -> Tuple[pd.DataFrame, pd.DataFrame]:
+) -> tuple[pd.DataFrame, pd.DataFrame]:
     """
     Read the results and fragments parquet or tsv files.
 
@@ -190,7 +188,7 @@ def map_fragment_type_to_aa_position(
 
 def count_fragments_per_amino_acid(
     results_df: pd.DataFrame, fragments_df: pd.DataFrame
-) -> Dict[int, Tuple[List[int], List[int], List[int]]]:
+) -> dict[int, tuple[list[int], list[int], list[int]]]:
     """
     Count the number of fragment ions matching to each amino acid in the peptide,
     separating forward ions (a, b, c) and reverse ions (x, y, z).
@@ -258,7 +256,7 @@ def count_fragments_per_amino_acid(
 
 def create_output_dataframe(
     results_df: pd.DataFrame,
-    fragment_counts_by_psm: Dict[int, Tuple[List[int], List[int], List[int]]],
+    fragment_counts_by_psm: dict[int, tuple[list[int], list[int], list[int]]],
     mass_error_type: str = "ppm",
     mass_error_value: float = 50.0,
     use_mass_shift: bool = False,
@@ -310,7 +308,10 @@ def create_output_dataframe(
             try:
                 # Generate ambiguity annotation using peptacular
                 ambiguity_sequence = pt.annotate_ambiguity(
-                    psm_row["peptide"], forward_counts, reverse_counts, mass_shift
+                    psm_row["peptide"],
+                    forward_counts,
+                    reverse_counts,
+                    mass_shift=mass_shift,
                 )
                 ambiguity_sequences.append(ambiguity_sequence)
                 mass_shifts.append(mass_shift)

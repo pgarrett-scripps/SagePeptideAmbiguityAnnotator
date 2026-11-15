@@ -13,15 +13,18 @@ authors = [
 license = {text = "MIT"}
 classifiers = [
     "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
     "Topic :: Scientific/Engineering :: Bio-Informatics",
 ]
-requires-python = ">=3.9"
+# peptacular 5 requires Python 3.12 or newer, so this package does too.
+requires-python = ">=3.12"
 dependencies = [
     "pandas",
     "fastparquet",
-    "peptacular==2.5.0",
+    "peptacular>=5,<6",
 ]
 
 [project.urls]
@@ -36,3 +39,21 @@ packages = ["sage_peptide_ambiguity_annotator"]
 
 [tool.setuptools.dynamic]
 version = {attr = "sage_peptide_ambiguity_annotator.__version__"}
+
+[dependency-groups]
+dev = [
+    "pytest>=8",
+    "ruff>=0.6",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+# 127 was the limit the previous flake8 CI step used.
+line-length = 127
+target-version = "py312"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
